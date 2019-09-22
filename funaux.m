@@ -55,7 +55,12 @@ function [T] = showNoEstacionario(m, b, G, TI, et, dx, model, xnode)
 	
 	N = length(b);
 	fd = 1 ;
-	dt = 0.5 * dx^2  / model.k * fd;
+	dt = 0.0;
+	if model.v ~0
+		dt = min([dx / model.v, 0.5 * dx^2  / model.k * fd]);
+	else
+		dt =  0.5 * dx^2  / model.k * fd;
+
 	rhoCp = model.rhoCp;
 	
 	

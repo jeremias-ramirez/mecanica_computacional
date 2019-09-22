@@ -31,12 +31,20 @@ function [T] = difFinitas (xnode, model, cb, et)
 	v = model.v;
 	c = model.c;
 	G = model.G;
-
-	a = 1 + (v * dx) / (2 * k);
-	b = -(2 + c * dx^2 / k);
-	c = 1 - (v * dx) / (2 * k);
+	% numero de Peclet
+    	Pe = (v * dx)/(2*k);
+    
+    	% calculo segun el valor del numero de peclet
+    	if (Pe > 1)
+    	    knum = v*dx/2;
+    	else
+    	    knum = 0;
+    	end
 	
-	G = (-dx^2 / k) * G;
+	a = 1 + (v * dx) / (2 * (k + knum));
+	b = -(2 + c * dx^2 / (k+ knum));
+	c = 1 - (v * dx) / (2 * (k + knum));
+	
 
 	if length(G) == 1
 		G = ones(N,1) * G;
@@ -45,6 +53,7 @@ function [T] = difFinitas (xnode, model, cb, et)
 	G(1,1) = 0;
 	G(N,1) = 0;
 		
+	G = (-dx^2 / k) * G;
 
 	m = getMatrixN(N, a, b, c);
 	[m, b] = getCondicionBordes(m, dx, model , cb);
