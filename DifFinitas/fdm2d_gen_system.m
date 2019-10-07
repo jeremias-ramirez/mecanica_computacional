@@ -77,6 +77,15 @@ function [K,F] = fdm2d_gen_system(K,F,xnode,neighb,k,c,G)
         % calculados previamente. Asignar en el vector F el valor de la fuente
         % en el nodo P.
 
+	
+	%if ((0.5 - xnode(P,1))< 1e-05)
+	%	k(P) = 0.25;
+	%end
+	%
+	%if (xnode(P,1) > 1e-05)
+	%	k(P) = 0.25;
+	%end
+
         K(P,P) = -k(P) * (bx + by) + c(P);
 	if ( W ~= -1)
 		K(P, W) = -k(P) * cx;
@@ -92,6 +101,14 @@ function [K,F] = fdm2d_gen_system(K,F,xnode,neighb,k,c,G)
 	if ( S ~= -1)
 		K(P, S) = -k(P) * cy;
 	end
+	
+	%if ((xnode(P,1) - 0.5) >= 1e-05)
+	%	G(P) = -500;
+	%end
+	%
+	%if ((1.0 - xnode(P,1)) < 1e-05)
+	%	G(P) = -500;
+	%end
 
 
         F(P) = G(P);

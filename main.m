@@ -2982,8 +2982,8 @@ model.ts = 1;
 % Parámetros para esquemas temporales
 model.rho = 1.0000000000000000;
 model.cp = 1.0000000000000000;
-model.maxit =           105;
-model.tol = 1.000000e-10;
+model.maxit =           85;
+model.tol = 1.000000e-08;
 model.dt = 0.2;
 
 % Condición inicial

@@ -2,48 +2,9 @@ function k = getMatrixTriang(N,a,b,c)
 	k = diag(b*ones(N-2,1))+diag(c*ones(N-3,1),1)+diag(a*ones(N-3,1),-1);
 end
 
-function k = getMatrixN(N,a,b,c)
+function k = getMatrixTriang2(N,a,b,c)
 	k = diag(b*ones(N,1))+diag(c*ones(N-1,1),1)+diag(a*ones(N-1,1),-1);
-	k(1,:) = [1, zeros(1, N-1)];
-	k(N,:) = [zeros(1, N-1), 1];
-
 end
-
-function [m, b] = getCondicionIzq(m, b, dx, model, cbI)
-	
-	switch( cbI(1) )
-		case 1
-			b(1,1) = cbI(2);
-		case 2
-			b(1,1) = (2 * cbI(2) * dx / model.k) * m(2,1);
-			m(1,1) = m(2,2); 
-			m(1,2) = 2;
-		case 3
-			b(1,1) = (-2 * cbI(2) * dx / model.k) * cbI(3) * m(2,1);
-			m(1,1) =  (-2 * cbI(2) * dx / model.k) * m(2,1) + m(2,2);
-			m(1,2) = 2;
-	end
-end
-
-			
-function [m, b] = getCondicionDer(m, b, dx, model, cbD)
-	N = length(b);
-
-	switch( cbD(1) )
-		case 1
-			b(N,1) = cbD(2);
-		case 2
-			b(N,1) = (2 * cbD(2) * dx / model.k) * m(2,3);
-			m(N,N) = m(2,2); 
-			m(N, N-1) = 2;
-		case 3
-			b(N, 1) = (-2 * cbD(2) * dx / model.k) * cbD(3) * m(2,3);
-			m(N, N) =  (-2 * cbD(2) * dx / model.k) * m(2,3) + m(2,2);
-			m(N, N-1) = 2;
-	end
-end
-
-
 
 function [m,b] = getCondicionBordes(m, dx, model, cb)
 	b = zeros(length(m(:,1)),1);
@@ -51,65 +12,144 @@ function [m,b] = getCondicionBordes(m, dx, model, cb)
 	[m, b] = getCondicionIzq(m, b, dx, model, cb(1,:)');
 	[m, b] = getCondicionDer(m, b, dx, model, cb(2,:)');
 end
-function [T] = showNoEstacionario(m, b, G, TI, et, dx, model, xnode)
+
+function k = getMatrixN(N,a,b,c)
+	k = diag(b * ones(N,1))+diag(c * ones(N-1,1),1)+diag(a * ones(N-1,1),-1);
+	k(1,:) = [1, zeros(1, N-1)];
+	k(N,:) = [zeros(1, N-1), 1];
+
+end
+
+function [M, F] = getCondicionIzq(M, F, dx, model, cbI)
 	
-	N = length(b);
+	switch( cbI(1) )
+		case 1
+			F(1,1) = cbI(2);
+		case 2
+			F(1,1) = F(1,1) - 2 * cbI(2) / dx - model.v * cbI(2) / model.k ;
+			M(1,2) = -2 * model.k / dx^2;
+		case 3
+			F(1,1) = F(1,1) + 2 * cbI(2) * cbI(3) / dx + model.v * cbI(2) * cbI(3) / model.k ;
+			M(1,1) =  M(1, 1) + 2 * cbI(2) / dx + model.v * cbI(2) / model.k;
+			M(1,2) = -2 * model.k / dx^2;
+	end
+end
+
+			
+function [M, F] = getCondicionDer(M, F, dx, model, cbD)
+	N = length(F);
+	
+	switch( cbD(1) )
+		case 1
+			F(N,1) = cbD(2);
+		case 2
+			F(N,1) = F(1,1) - 2 * cbD(2) / dx - model.v * cbD(2) / model.k ;
+			M(N,N-1) = -2 * model.k / dx^2;
+		case 3
+			F(N,1) = F(1,1) + 2 * cbD(2) * cbD(3) / dx + model.v * cbD(2) * cbD(3) / model.k ;
+			M(N,N) =  M(N, N) + 2 * cbD(2) / dx + model.v * cbD(2) / model.k;
+			M(N,N-1) = -2 * model.k / dx^2;
+	end
+end
+
+
+
+function [M, F] =  getSystem(N, dx, model, cb)
+	k = model.k;
+	v = model.v;
+	c = model.c;
+	G = model.G;
+	
+	% numero de Peclet
+    	Pe = (v * dx)/(2*k);
+   	 
+    	% calculo segun el valor del numero de peclet
+    	if (Pe > 1)
+    	    knum = v * dx / 2;
+    	else
+    	    knum = 0;
+    	end
+	k = k + knum ;
+
+	a = -1 * (k / dx^2 + v / (2 * dx)) ;
+	b = 2 * k / dx^2 - c ; 
+	c = - k / dx^2 + v / (2 * dx) ;
+	
+
+	if length(G) == 1
+		G = ones(N,1) * G;
+	end
+
+	F = G;
+
+	M = getMatrixN(N, a, b, c);
+	
+	[M, F] = getCondicionIzq(M, F, dx, model, cb(1,:)');
+	[M, F] = getCondicionDer(M, F, dx, model, cb(2,:)');
+end
+
+	
+function [T] = showNoEstacionario(M, F, TI, et, dx, model, xnode)
+	
+	N = length(F);
+
 	fd = 1 ;
 	dt = 0.0;
-	if model.v ~0
+	if model.v ~= 0
 		dt = min([dx / model.v, 0.5 * dx^2  / model.k * fd]);
 	else
 		dt =  0.5 * dx^2  / model.k * fd;
-
+	end
+	
 	rhoCp = model.rhoCp;
 	
-	
 	I = diag(ones(N,1));
-
-		
+	
 	tol = 0.00001;
 	e = 1;
 	iter = 0;
-	iterMax = 1000;
+	iterMax = 1;
 
+	
 	switch (et)
-	case 1
+		case 1
+			dt_rhoCp = dt / rhoCp;
+	
 		
-		dt_rhoCp = dt / rhoCp;
-		k_dx2 = model.k / dx^2;
-		m(2:N-1,:) = dt_rhoCp * k_dx2 * m(2:N-1,:) + I(2:N-1,:);
-		G = -dt_rhoCp * k_dx2 * G;
-		T =  G + m * TI + b;
-		while ( e > tol || iter < iterMax)	
-			TNew =  G + m * T;
+			for n = 1:iterMax
+				TN = dt_rhoCp * F + (I - dt_rhoCp * M) * TI;
+				err = norm(TN - TI, 2) / norm(TN, 2);
+				
+				if err < tol
+					break;
+				end
+				plot(xnode, TN)
+				pause(0.5)
+				TI = TN;
+			end
 
-			e = norm(TNew - T, 2);
-			T = TNew;
-			plot(xnode, T)
-			pause(0.05)
-		end
-	case 2
+		case 2
 
-		fa = 4 ;
-		dt = dt * fa;
-		rhoCp_dt = rhoCp / dt;
-		m(2:N-1,:) = m(2:N-1,:) - rhoCp_dt * I(2:N-1,:);
-		
-		T =  TI;
+			fa = 2 ;
+			dt = dt * fa;
+			rhoCp_dt = rhoCp / dt;
+			k = rhoCp_dt * I + M;
 
-		while ( e > tol || iter < iterMax)	
-			T(1,1) = 0;
-			T(N,1) = 0;
+			for n = 1:iterMax
 
-			TNew = m \ (G  - rhoCp_dt * T + b);
-			TNew(1,1) = b(1,1);
-			TNew(N,1) = b(N,1);
-
-			e = norm(TNew - T, 2);
-			T = TNew;
-			plot(xnode, T)
-			pause(0.05)
-		end
+				FF = F + rhoCp_dt * TI;
+				TN = k \ FF;
+				err = norm(TN - TI, 2) / norm(TN, 2);
+				
+				if err < tol
+					break;
+				end
+				plot(xnode, TN)
+				pause(0.5)
+				TI = TN;
+				
+				
+			end
 	end
 end
 

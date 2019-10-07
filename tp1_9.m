@@ -11,7 +11,7 @@ cb = [[1,1,-1];[1,0,-1]];
 xnode = [0:0.1:1]';
 
 model.G = 100 .* xnode;
-et = 1;
+et = 2;
 
 T = difFinitas(xnode, model, cb, et);
-#plot(xnode,T)
+plot(xnode,T)

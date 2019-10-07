@@ -24,77 +24,32 @@
 source "funaux.m"
 
 function [T] = difFinitas (xnode, model, cb, et)
+	
 	N = length(xnode);
-
 	dx = xnode(2,1) - xnode(1,1);
-	k = model.k;
-	v = model.v;
-	c = model.c;
-	G = model.G;
-	% numero de Peclet
-    	Pe = (v * dx)/(2*k);
-    
-    	% calculo segun el valor del numero de peclet
-    	if (Pe > 1)
-    	    knum = v*dx/2;
-    	else
-    	    knum = 0;
-    	end
 	
-	a = 1 + (v * dx) / (2 * (k + knum));
-	b = -(2 + c * dx^2 / (k+ knum));
-	c = 1 - (v * dx) / (2 * (k + knum));
-	
+	[M, F] = getSystem(N, dx, model, cb);
 
-	if length(G) == 1
-		G = ones(N,1) * G;
-	end
-
-	G(1,1) = 0;
-	G(N,1) = 0;
-		
-	G = (-dx^2 / k) * G;
-
-	m = getMatrixN(N, a, b, c);
-	[m, b] = getCondicionBordes(m, dx, model , cb);
-	T = m \ (G + b);
-	figure(1)
-	plot(xnode, T);
 
 	if et == 0
-		T = m \ (G + b);
+		T = M \ F;
 		return	
 	end
+	
 	TI = zeros(N,1);
+	if cb(1,1) == 1
+		TI(1,1) = cb(1,2);
+	end
+
+	if cb(2,1) == 1
+		TI(N,1) = cb(2,2);
+	end
+
 	figure(2)
-	showNoEstacionario(m, b, G, TI, et, dx, model, xnode)
+	
+	%TI = 100 - 50 * xnode;
 
-	#fd = 1 ;
-	#fa = 2 ;
-	#dt = 0.5 * dx^2  / k * fd;
-	#rhoCp = model.rhoCp;
-	#
-	#dt_rhoCp = dt/rhoCp;
-	#
-	#T = zeros(N,1);
-	#I = diag(ones(N,1));
+	showNoEstacionario(M, F, TI, et, dx, model, xnode)
 
-	#m(2:N-1,:) = dt_rhoCp * m(2:N-1,:) + I(2:N-1,:);
-	#G = -dt_rhoCp * G;
-	#T =  G + m * T + b;
-	#
-	#tol = 0.0000001;
-	#e = 1;
-	#iter = 0;
-
-	#figure(2)
-	#while ( e > tol || iter < 1000)	
-	#	TNew =  G + m * T;
-
-	#	e = norm(TNew - T, 2);
-	#	T = TNew;
-	#	plot(xnode, T)
-	#	pause(0.05)
-		
 end
 
