@@ -12,15 +12,7 @@ function [PHI_vec, Q_vec] = fdm2d_implicit(K,F,xnode,neighb,model,dt)
 	KK = a*I + K;
         FF = F + a*PHI; 
         PHI = KK\FF;
-       	maxTemp = max(PHI)
-	length(PHI)
-	for i =1:length(PHI);
-		if PHI(i) == maxTemp
-			disp(xnode(i,1))
-			disp(xnode(i,2))
-
-		end
-	end
+       		
 	if (5.0 == n * model.dt )
 		disp(PHI(283))
 		disp(PHI(291))

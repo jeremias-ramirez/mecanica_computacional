@@ -9,6 +9,7 @@ function [PHI,Q] = fdm2d(xnode, icone, DIR, NEU, ROB, model)
     % Inicialización de variables principales del sistema
     [K,F] = fdm2d_initialize(model.nnodes);
     
+    
     % Armado de la matriz de vecindad
     [neighb] = fdm2d_neighbors(icone);
     

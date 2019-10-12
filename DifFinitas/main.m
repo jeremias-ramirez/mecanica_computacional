@@ -2982,7 +2982,7 @@ model.ts = 1;
 % Parámetros para esquemas temporales
 model.rho = 1.0000000000000000;
 model.cp = 1.0000000000000000;
-model.maxit =           105;
+model.maxit =           85;
 model.tol = 1.000000e-10;
 model.dt = 0.2;
 
@@ -2991,8 +2991,21 @@ model.PHI_n = zeros(model.nnodes,1);
 
 disp("Iniciando el método numérico...");
 
+for P = 1 : model.nnodes
+	if (((0.5 - xnode(P,1)) > 1e-05) && (xnode(P,1) > 1e-05))
+		model.k(P) = 0.25;
+	end
+	
+	if (((xnode(P,1) - 0.5) >= 1e-05) && ((1.0 - xnode(P,1)) > 1e-05))
+		model.G(P) = -500;
+	end	
+
+end
+
 % Llamada principal al Método de Diferencias Finitas
 [PHI,Q] = fdm2d(xnode, icone, DIR, NEU, ROB, model);
+
+[valMax, nodo] = max(PHI(:, model.maxit))
 
 disp("Finalizada la ejecución del método numérico.");
 
@@ -3012,6 +3025,7 @@ disp("Iniciando el post-procesamiento...");
 %           [4] Magnitud de Flujo de Calor (escalar)
 mode = 0;
 graph = 0;
-fdm2d_graph_mesh(full(PHI),Q,xnode,icone,mode,graph);
+
+%fdm2d_graph_mesh(full(PHI),Q,xnode,icone,mode,graph);
 
 disp("Finalizado el post-procesamiento.");
