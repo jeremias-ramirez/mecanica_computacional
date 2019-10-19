@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 
@@ -16,48 +17,48 @@
 \item 
     \textbf{Discretización de la Ecuación de Conservación escalar }
 
-    Sea $\phi(x,y,z)$ una magnitud escalar, $\Omega$ un dominio en $\mathfrak{R}^3$ y $\Gamma$ su frontera, podemos escribir una ecuación de conservación de esta cantidad en forma diferencial como: 
+    Sea $\phi(x,y,z)$ una magnitud escalar, $\Omega$ un dominio en $\mathbb{R}^3$ y $\Gamma$ su frontera, podemos escribir una ecuación de conservación de esta cantidad en forma diferencial como: 
 
     \begin{equation}
         \dfrac {{ \partial \phi}} {{ \partial t}} + \nabla \vec{v}\phi+c\phi = \nabla  \frac{k}{\rho C_p} \nabla \phi + Q
         \end{equation}
     Tomando la ecuación diferencial anterior e integrándola en todo el dominio. Si aplico el teorema de Gauss-Green, a los términos que poseen divergencia de flujos estos generan en lugar de integrales de volúmenes, integrales de superficies como se ve en la siguiente ecuación:
     \begin{equation}
-       \int_{\Omega} \dfrac {{ \partial \phi}} {{ \partial t}} d\Omega + \int_{\Gamma} \vec{v}\phi d\vec{\Gamma} + \int_{\Omega} c \phi d\Omega = \int_{\Gamma}  \frac{k}{\rho C_p} \nabla \phi \vec{d\Gamma} + \int_{\Omega} Q d\Omega
+       \int_{\Omega} \dfrac { \partial \phi} { \partial t} \, d\Omega + \int_{\Gamma} \vec{v}\phi \cdot \vec{d\Gamma} + \int_{\Omega} c \phi \, d\Omega = \int_{\Gamma}  \frac{k}{\rho C_p} \nabla \phi \cdot \vec{d\Gamma} + \int_{\Omega} Q \, d\Omega
     \end{equation}
     Juntando las integrales de volumen en un termino y las de superficie en otros.\
     
    \begin{equation}
-       \int_{\Omega} (\dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q ) d\Omega + \int_{\Gamma} (\vec{v}\phi - \frac{k}{\rho C_p} \nabla \phi) d\vec{\Gamma} = 0
+       \int_{\Omega} \left( \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \right) d\Omega + \int_{\Gamma} \left( \vec{v}\phi - \frac{k}{\rho C_p} \nabla \phi \right) \cdot \vec{d\Gamma} = 0
    \end{equation} 
    
     Tomando dominio de calculo y dividirla en porciones denominadas celdas o volúmenes finitos que cubrirán todo el dominio de calculo, además no están superpuestas.
     \begin{equation}
-        \sum_{j=1}^{m} \int_{\Omega_j} \Big[ \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \Big] d\Omega - \int_{\Gamma_j} \Big[ \kappa \nabla \phi- \vec{v}\phi \Big]  \vec{d\Gamma} = 0
+        \sum_{j=1}^{m} \left[ \int_{\Omega_j} \left( \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \right) d\Omega - \int_{\Gamma_j} \left( \kappa \nabla \phi- \vec{v}\phi \right) \cdot \vec{d\Gamma} \right] = 0
     \end{equation}
     Considerando a los volúmenes de la discretización como poliedros, se obtiene entonces:
     \begin{equation}
-        \sum_{j=1}^{m} \int_{\Omega_j} \Big[ \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \Big] d\Omega - \Big\{ \sum_{i=1}^{n} \int_{\Gamma_i} \Big[ \kappa \nabla \phi - \vec{v}\phi \Big] . \vec{d\Gamma_i} \Big\}_j= 0
+        \sum_{j=1}^{m} \left[ \int_{\Omega_j} \left( \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \right) d\Omega - \left\{ \sum_{i=1}^{n} \int_{\Gamma_i} \left( \kappa \nabla \phi - \vec{v}\phi \right) \cdot \vec{d\Gamma_i} \right\}_j \right] = 0
     \end{equation}
     Considerando los valores de $\phi$ constante por celda y por cara se puede realizar la siguientes aproximaciones
     \begin{equation}
         \begin{aligned}
-            \int_{\Omega_j} \phi d\Omega_j = \bar{\phi}V_j \\
-            \int_{\Gamma_i} \phi \vec{d\Gamma_i} = \bar{\phi} \vec{S_{fi}}    
+            \int_{\Omega_j} \phi \, d\Omega_j = \bar{\phi}V_j \\
+            \int_{\Gamma_i} \phi \, \vec{d\Gamma_i} = \bar{\phi} \vec{S_{f_i}}    
         \end{aligned}
     \end{equation}
-    Donde $V_j$ es el volumen de la celda j-esima y $\vec{S_{fi}}$ es el área de la frontera con dirección normal a ésta. 
+    Donde $V_j$ es el volumen de la celda j-esima y $\vec{S_{f_i}}$ es el área de la frontera con dirección normal a ésta. 
     Quedando la ecuación final
     \begin{equation}
-        \sum_{j=1}^{m}  \Big[ \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \Big] V_j - \Big\{ \sum_{i=1}^{n} \Big[ \kappa \nabla \phi - \vec{v}\phi \Big] . \vec{S_{fi}} \Big\}_j= 0
+        \sum_{j=1}^{m} \left[ \left( \dfrac {{ \partial \phi_j}} {{ \partial t}} + c \phi_j - Q \right) V_j - \left\{ \sum_{i=1}^{n} \left( \kappa \nabla \phi - \vec{v}\phi \right)_{f_i} \cdot \vec{S_{fi}} \right\}_j \right] = 0
         \label{eq: volumenFinal}
     \end{equation}
 \item 
     \textbf{Aplicación en 1D} 
     
-    Analizando ecuación \ref{eq: volumenFinal} con una sola celda P queda:
+    Aplicando la ecuación \ref{eq: volumenFinal} a una sola celda P queda:
     \begin{equation}
-        \Big[ \dfrac {{ \partial \phi_P}} {{ \partial t}} + c \phi_P - Q_P \Big] V_P - \Big\{ \sum_{i=1}^{n} \Big[ \kappa \nabla \phi - \vec{v}\phi \Big]_{fi} . \vec{S_{fi}} \Big\}_P= 0
+        \left( \dfrac { \partial \phi_P} {{ \partial t}} + c \phi_P - Q_P \right) V_P - \left\{ \sum_{i=1}^{n} \left( \kappa \nabla \phi - \vec{v}\phi \right)_{f_i} \cdot \vec{S_{f_i}} \right\}_P= 0
         \label{eq: celdaPGeneral}
     \end{equation}
     
@@ -65,43 +66,77 @@
     El gradiente de las respectivas caras se obtiene a partir de una aproximación centrada. Las aproximaciones son:
     \begin{equation}
         \begin{aligned}
-            \nabla \phi_w \vec{S_{fw}}= \frac{\phi_W - \phi_P}{\delta_w}\hat{(-i)}S_w\vec{n_w}\\
-            \nabla \phi_w \vec{S_{fe}}= \frac{\phi_E - \phi_P}{\delta_e}\hat{(i)}S_e\vec{n_e}
+            \nabla \phi_w \cdot \vec{S_{f_w}} &=
+            \frac{\phi_W - \phi_P}{\delta_w} \vec{(\shortminus i)} \cdot \vec{n_w} S_w =
+            \frac{\phi_W - \phi_P}{\delta_w} S_w \\
+            \nabla \phi_w \cdot \vec{S_{f_e}} &=
+            \frac{\phi_E - \phi_P}{\delta_e} \vec{(i)} \cdot \vec{n_e} S_e =
+            \frac{\phi_E - \phi_P}{\delta_e} S_e
         \end{aligned}
         \label{eq: gradientes}
     \end{equation} 
-    Donde $S_{w|e}$ son la magnitud de las respectivas caras, y $\vec{n_{w|e}}$ son los versores normales a la caras. Las cuales son para 1D $\hat{(-i)} = -1$ y $\hat{(i)} = 1$ respectivamente.
+    Donde $S_{w|e}$ son la magnitud del área de las respectivas caras, y $\vec{n_{w|e}}$ son los versores normales a la caras. Los cuales son para 1D resultan ser $\vec{(\shortminus i)} = (\shortminus 1, 0, 0)$ e $\vec{(i)} = (1, 0 , 0)$ respectivamente.
     
     
-    Los valores $\delta_{w|e}$ son la distancias entre los centroides W-P y E-P, si se considera una malla uniforme con división dx, ambas distancias son igual a dx.
+    Los valores $\delta_{w|e}$ son la distancias entre los centroides W-P y E-P, si se considera una malla uniforme con división $dx$, ambas distancias son iguales a $dx$.
     El área en ambas caras, con malla uniforme, esta dada por $S_{w|e}= A = dy*t$.
     
     Expandiendo (\ref{eq: celdaPGeneral}) y reemplazando los gradientes por (\ref{eq: gradientes}) , eliminado el termino temporal y agregando todas las consideraciones dichas anteriormente, la ecuación resultante es:
+    
     \begin{multline}
-        c \phi_P V_P -  \frac{\phi_W - \phi_P}{\delta_w} A - \vec{v}\phi_{fw} A(-1) \\ 
-        - \frac{\phi_E - \phi_P} {\delta_e} A - \vec{v}\phi_{fe} A (1)  = Q_P V_P    
+    	\begin{aligned}
+	        c \phi_P V_P &- \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) + \vec{v}\phi_{f_w} \cdot \vec{S_{f_w}} \\ 
+	        &- \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + \vec{v}\phi_{f_e} \cdot \vec{S_{f_e}}  = Q_P V_P    
+        \end{aligned}
         \label{eq: celdaPGrad}
     \end{multline}
+    
+    Considerando que
+    
+    \begin{equation*}
+    	\begin{aligned}
+	    	\vec{v}\phi_{f_w} \cdot \vec{S_{f_w}} &=
+	    	\phi_{f_w} \vec{v} \cdot \vec{n_w} A =
+	    	- v_x \phi_{f_w} A
+	    	\\
+	    	\vec{v}\phi_{f_e} \cdot \vec{S_{f_e}} &=
+	    	\phi_{f_e} \vec{v} \cdot \vec{n_e} A =
+	    	v_x \phi_{f_e} A
+    	\end{aligned}
+    \end{equation*}
+    
+    La ecuación (\ref{eq: celdaPGrad}) puede reducirse, aplicando estas consideraciones y agrupando términos, a:
+    
+    \begin{equation}
+	    c \phi_P V_P - \frac{\kappa A}{dx} \left( \phi_W - 2 \phi_P + \phi_E \right) + v_x A \left( \phi_{f_e} - \phi_{f_w} \right)  = Q_P V_P
+	 	\label{eq: celdaPGradVel}
+    \end{equation}
+    
      \begin{enumerate}
          \item 
-            \textbf{Esquema Centrado para $\phi_{fi}$} 
+            \textbf{Esquema Centrado para $\phi_{f_i}$} 
             
             Para aproximar $\phi_{fi}$ se utiliza una interpolación lineal entre los centroides que están relacionados por la cara, es decir:
             \begin{equation*}
                 \begin{aligned}
-                    \phi_w = f_x^w \phi_P + (1 - f_x^w) \phi_W \\
-                    \phi_e = f_x^e \phi_P + (1 - f_x^e) \phi_N 
+                    \phi_w &= f_x^w \phi_P + (1 - f_x^w) \phi_W \\
+                    \phi_e &= f_x^e \phi_P + (1 - f_x^e) \phi_N 
                 \end{aligned}      
             \end{equation*} 
             Para una malla uniforme $f_x^{w|e} = 1/2$, quedando las siguientes aproximaciones:
             
-            \begin{equation}
+            \begin{equation*}
                 \begin{aligned}
-                    \phi_w \vec{S_{fw}}= \frac{\phi_P +  \phi_W}{2} A (-1) \\
-                    \phi_e \vec{S_{fe}}= \frac{\phi_P +  \phi_E}{2} A (1) 
-                    \label{eq:advectivo}
-               \end{aligned}      
-            \end{equation} 
+                    \phi_w &= \frac{\phi_P +  \phi_W}{2} \\
+                    \phi_e &= \frac{\phi_P +  \phi_E}{2}
+            	\end{aligned}      
+            \end{equation*}
+            
+            Aplicando estas aproximaciones a la ecuación (\ref{eq: celdaPGradVel}) se obtiene:
+    
+    		\begin{equation}
+	    		c \phi_P V_P - \frac{\kappa A}{dx} \left( \phi_W - 2 \phi_P + \phi_E \right) + v_x A \left( \phi_E - \phi_W \right)  = Q_P V_P
+    		\end{equation}
     
      \end{enumerate} 
 
