@@ -2991,16 +2991,17 @@ model.PHI_n = zeros(model.nnodes,1);
 
 disp("Iniciando el método numérico...");
 
-%for P = 1 : model.nnodes
-%	if (((0.5 - xnode(P,1)) > 1e-05) && (xnode(P,1) > 1e-05))
-%		model.k(P) = 0.25;
-%	end
-%	
-%	if (((xnode(P,1) - 0.5) >= 1e-05) && ((1.0 - xnode(P,1)) > 1e-05))
-%		model.G(P) = -500;
-%	end	
-%
-%end
+for P = 1 : model.nnodes
+	if (((0.5 - xnode(P,1)) > 1e-05) && (xnode(P,1) > 0))
+		model.k(P) = 0.25;
+	end
+	
+	if ((xnode(P,1)   >= 0.5) && ((1.0 - xnode(P,1)) > 1e-05))
+	%if (((xnode(P, 1) - 0.5) >= 1e-05) && ((1.0 - xnode(P,1)) > 1e-05)) mal
+		model.G(P) = -500;
+	end	
+
+end
 
 % Llamada principal al Método de Diferencias Finitas
 [PHI,Q] = fdm2d(xnode, icone, DIR, NEU, ROB, model);

@@ -1,0 +1,109 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+
+\title{Trabajo Practico Volúmenes Finitos 1D}
+\author{Lagorio Jeremias }
+\date{ Octubre 2019}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+\item 
+    \textbf{Discretización de la Ecuación de Conservación escalar }
+
+    Sea $\phi(x,y,z)$ una magnitud escalar, $\Omega$ un dominio en $\mathfrak{R}^3$ y $\Gamma$ su frontera, podemos escribir una ecuación de conservación de esta cantidad en forma diferencial como: 
+
+    \begin{equation}
+        \dfrac {{ \partial \phi}} {{ \partial t}} + \nabla \vec{v}\phi+c\phi = \nabla  \frac{k}{\rho C_p} \nabla \phi + Q
+        \end{equation}
+    Tomando la ecuación diferencial anterior e integrándola en todo el dominio. Si aplico el teorema de Gauss-Green, a los términos que poseen divergencia de flujos estos generan en lugar de integrales de volúmenes, integrales de superficies como se ve en la siguiente ecuación:
+    \begin{equation}
+       \int_{\Omega} \dfrac {{ \partial \phi}} {{ \partial t}} d\Omega + \int_{\Gamma} \vec{v}\phi d\vec{\Gamma} + \int_{\Omega} c \phi d\Omega = \int_{\Gamma}  \frac{k}{\rho C_p} \nabla \phi \vec{d\Gamma} + \int_{\Omega} Q d\Omega
+    \end{equation}
+    Juntando las integrales de volumen en un termino y las de superficie en otros.\
+    
+   \begin{equation}
+       \int_{\Omega} (\dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q ) d\Omega + \int_{\Gamma} (\vec{v}\phi - \frac{k}{\rho C_p} \nabla \phi) d\vec{\Gamma} = 0
+   \end{equation} 
+   
+    Tomando dominio de calculo y dividirla en porciones denominadas celdas o volúmenes finitos que cubrirán todo el dominio de calculo, además no están superpuestas.
+    \begin{equation}
+        \sum_{j=1}^{m} \int_{\Omega_j} \Big[ \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \Big] d\Omega - \int_{\Gamma_j} \Big[ \kappa \nabla \phi- \vec{v}\phi \Big]  \vec{d\Gamma} = 0
+    \end{equation}
+    Considerando a los volúmenes de la discretización como poliedros, se obtiene entonces:
+    \begin{equation}
+        \sum_{j=1}^{m} \int_{\Omega_j} \Big[ \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \Big] d\Omega - \Big\{ \sum_{i=1}^{n} \int_{\Gamma_i} \Big[ \kappa \nabla \phi - \vec{v}\phi \Big] . \vec{d\Gamma_i} \Big\}_j= 0
+    \end{equation}
+    Considerando los valores de $\phi$ constante por celda y por cara se puede realizar la siguientes aproximaciones
+    \begin{equation}
+        \begin{aligned}
+            \int_{\Omega_j} \phi d\Omega_j = \bar{\phi}V_j \\
+            \int_{\Gamma_i} \phi \vec{d\Gamma_i} = \bar{\phi} \vec{S_{fi}}    
+        \end{aligned}
+    \end{equation}
+    Donde $V_j$ es el volumen de la celda j-esima y $\vec{S_{fi}}$ es el área de la frontera con dirección normal a ésta. 
+    Quedando la ecuación final
+    \begin{equation}
+        \sum_{j=1}^{m}  \Big[ \dfrac {{ \partial \phi}} {{ \partial t}} + c \phi - Q \Big] V_j - \Big\{ \sum_{i=1}^{n} \Big[ \kappa \nabla \phi - \vec{v}\phi \Big] . \vec{S_{fi}} \Big\}_j= 0
+        \label{eq: volumenFinal}
+    \end{equation}
+\item 
+    \textbf{Aplicación en 1D} 
+    
+    Analizando ecuación \ref{eq: volumenFinal} con una sola celda P queda:
+    \begin{equation}
+        \Big[ \dfrac {{ \partial \phi_P}} {{ \partial t}} + c \phi_P - Q_P \Big] V_P - \Big\{ \sum_{i=1}^{n} \Big[ \kappa \nabla \phi - \vec{v}\phi \Big]_{fi} . \vec{S_{fi}} \Big\}_P= 0
+        \label{eq: celdaPGeneral}
+    \end{equation}
+    
+    Considerando que la celda P, tiene como vecinos los centroides W y E, con sus respectivas caras w y e.
+    El gradiente de las respectivas caras se obtiene a partir de una aproximación centrada. Las aproximaciones son:
+    \begin{equation}
+        \begin{aligned}
+            \nabla \phi_w \vec{S_{fw}}= \frac{\phi_W - \phi_P}{\delta_w}\hat{(-i)}S_w\vec{n_w}\\
+            \nabla \phi_w \vec{S_{fe}}= \frac{\phi_E - \phi_P}{\delta_e}\hat{(i)}S_e\vec{n_e}
+        \end{aligned}
+        \label{eq: gradientes}
+    \end{equation} 
+    Donde $S_{w|e}$ son la magnitud de las respectivas caras, y $\vec{n_{w|e}}$ son los versores normales a la caras. Las cuales son para 1D $\hat{(-i)} = -1$ y $\hat{(i)} = 1$ respectivamente.
+    
+    
+    Los valores $\delta_{w|e}$ son la distancias entre los centroides W-P y E-P, si se considera una malla uniforme con división dx, ambas distancias son igual a dx.
+    El área en ambas caras, con malla uniforme, esta dada por $S_{w|e}= A = dy*t$.
+    
+    Expandiendo (\ref{eq: celdaPGeneral}) y reemplazando los gradientes por (\ref{eq: gradientes}) , eliminado el termino temporal y agregando todas las consideraciones dichas anteriormente, la ecuación resultante es:
+    \begin{multline}
+        c \phi_P V_P -  \frac{\phi_W - \phi_P}{\delta_w} A - \vec{v}\phi_{fw} A(-1) \\ 
+        - \frac{\phi_E - \phi_P} {\delta_e} A - \vec{v}\phi_{fe} A (1)  = Q_P V_P    
+        \label{eq: celdaPGrad}
+    \end{multline}
+     \begin{enumerate}
+         \item 
+            \textbf{Esquema Centrado para $\phi_{fi}$} 
+            
+            Para aproximar $\phi_{fi}$ se utiliza una interpolación lineal entre los centroides que están relacionados por la cara, es decir:
+            \begin{equation*}
+                \begin{aligned}
+                    \phi_w = f_x^w \phi_P + (1 - f_x^w) \phi_W \\
+                    \phi_e = f_x^e \phi_P + (1 - f_x^e) \phi_N 
+                \end{aligned}      
+            \end{equation*} 
+            Para una malla uniforme $f_x^{w|e} = 1/2$, quedando las siguientes aproximaciones:
+            
+            \begin{equation}
+                \begin{aligned}
+                    \phi_w \vec{S_{fw}}= \frac{\phi_P +  \phi_W}{2} A (-1) \\
+                    \phi_e \vec{S_{fe}}= \frac{\phi_P +  \phi_E}{2} A (1) 
+                    \label{eq:advectivo}
+               \end{aligned}      
+            \end{equation} 
+    
+     \end{enumerate} 
+
+\end{enumerate}
+\end{document}

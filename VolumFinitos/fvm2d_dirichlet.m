@@ -21,27 +21,4 @@ function [K,F] = fvm2d_dirichlet(K,F,cells,DIR)
 % * F: vector de flujo térmico con modificaciones luego de aplicar la condición
 %   de borde.
 % ----------------------------------------------------------------------
-
-for n = 1 : size(DIR, 1) 
-	P = DIR(n, 1);
-	phi_P = DIR(n, 2);
-	cara = DIR(n, 3);
-	R = 0;
-	switch (cara)
-		case 1 %Sur
-			R = cells(P).ks * cells(P).as / cells(P).ds;
-		case 2 %Este
-			R = cells(P).ke * cells(P).ae / cells(P).de;
-		case 3 %Norte
-			R = cells(P).kn * cells(P).an / cells(P).dn;
-		case 4 %Oeste
-			R = cells(P).kw * cells(P).aw / cells(P).dw;
-	end
-
-	K(P, P) = K(P, P) + R;
-	F(P) = F(P) + R * phi_P;
-end
-
-
-
 end

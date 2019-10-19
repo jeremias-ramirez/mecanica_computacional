@@ -97,7 +97,7 @@ function [M, F] = getCondicionDerVol(M, F, dx, S, model, cbD)
 			M(N, N) = M(N, N) +   model.v * S / 2 - model.k * S / dx; 		
 			F(N, 1) = F(N, 1) - (model.v * S * dx / model.k + S ) * cbD(2);
 		case 3
-			den = model.k - (dx/2 * cbD(2)
+			den = model.k - (dx/2 * cbD(2))
 			a = (cbD(3) * cbD(2)) / den; 
 			b = - cbD(2) / den;
 			c = (- cbD(2) * cbD(3) * (dx/2) ) / den;
