@@ -107,25 +107,28 @@
             \label{eq: celdaPGradVel}
     \end{multline}
     
-            \subsection{Esquema Centrado para $\phi_{f_i}$} 
-            
-            Para aproximar $\phi_{fi}$ se utiliza una interpolación lineal entre los centroides que están relacionados por la cara, es decir:
-            \begin{equation*}
-                \begin{aligned}
-                    \phi_w &= f_x^w \phi_P + (1 - f_x^w) \phi_W \\
-                    \phi_e &= f_x^e \phi_P + (1 - f_x^e) \phi_N 
-                \end{aligned}      
-            \end{equation*} 
-            Para una malla uniforme $f_x^{w|e} = 1/2$, quedando las siguientes aproximaciones:
-            
-            \begin{equation*}
-                \begin{aligned}
-                    \phi_w &= \frac{\phi_P +  \phi_W}{2} \\
-                    \phi_e &= \frac{\phi_P +  \phi_E}{2}
-            	\end{aligned}      
-            \end{equation*}
-            
-            Aplicando estas aproximaciones a la ecuación (\ref{eq: celdaPGradVel}) se obtiene:
+        \subsection{Esquema Centrado para $\phi_{f_i}$}
+
+        Para aproximar $\phi_{f_i}$ se utiliza una interpolación lineal entre los centroides que están relacionados por la cara, es decir:
+
+        \begin{equation*}
+            \begin{aligned}
+                \phi_{f_w} &= f_x^w \phi_P + (1 - f_x^w) \phi_W \\
+                \phi_{f_e} &= f_x^e \phi_P + (1 - f_x^e) \phi_N
+            \end{aligned}
+        \end{equation*}
+
+        Para una malla uniforme $f_x^{w|e} = 1/2$, quedando las siguientes aproximaciones:
+
+        \begin{equation*}
+            \begin{aligned}
+                \phi_{f_w} &= \frac{\phi_P +  \phi_W}{2} \\
+                \phi_{f_e} &= \frac{\phi_P +  \phi_E}{2}
+			\end{aligned}
+        \end{equation*}
+
+        Aplicando estas aproximaciones a la ecuación (\ref{eq: celdaPGradVel}) se obtiene:
+
         \begin{multline}
     	    Q_P V_P = c  V_P \phi_P - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) - v_x \frac{\phi_P +  \phi_W}{2} A \\ 
     	        - \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x \frac{\phi_P +  \phi_E}{2} A
@@ -133,12 +136,14 @@
         \end{multline}
             
         Reagrupando los términos, queda la ecuación utilizada para armar el stencil central de la matriz :
-            \begin{multline}
-    	    Q_P V_P = (c  V_P + 2 \frac{\kappa A}{dx} ) \phi_P + ( -\frac{\kappa A}{dx} - \frac{v_x A}{2}) \phi_W 
-    	    + ( -\frac{\kappa A}{dx} + \frac{v_x A}{2}) \phi_E
+
+        \begin{equation}
+			Q_P V_P = \left( c  V_P + 2 \frac{\kappa A}{dx} \right) \phi_P
+			+ \left( -\frac{\kappa A}{dx} - \frac{v_x A}{2} \right) \phi_W
+			+ \left( -\frac{\kappa A}{dx} + \frac{v_x A}{2} \right) \phi_E
             \label{eq: stencilCentral}
-            \end{multline}
-            
+        \end{equation}
+
 \section{Condiciones de bordes}
     \subsection{Condición Dirichlet} 
     \subsubsection{Izquierda (West)}
