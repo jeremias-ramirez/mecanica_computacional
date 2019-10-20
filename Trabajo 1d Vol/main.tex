@@ -13,9 +13,7 @@
 
 \maketitle
 
-\begin{enumerate}
-\item 
-    \textbf{Discretización de la Ecuación de Conservación escalar }
+\section{Discretización de la Ecuación de Conservación escalar }
 
     Sea $\phi(x,y,z)$ una magnitud escalar, $\Omega$ un dominio en $\mathbb{R}^3$ y $\Gamma$ su frontera, podemos escribir una ecuación de conservación de esta cantidad en forma diferencial como: 
 
@@ -53,8 +51,7 @@
         \sum_{j=1}^{m} \left[ \left( \dfrac {{ \partial \phi_j}} {{ \partial t}} + c \phi_j - Q \right) V_j - \left\{ \sum_{i=1}^{n} \left( \kappa \nabla \phi - \vec{v}\phi \right)_{f_i} \cdot \vec{S_{fi}} \right\}_j \right] = 0
         \label{eq: volumenFinal}
     \end{equation}
-\item 
-    \textbf{Aplicación en 1D} 
+\section{Aplicación en 1D} 
     
     Aplicando la ecuación \ref{eq: volumenFinal} a una sola celda P queda:
     \begin{equation}
@@ -84,11 +81,9 @@
     Expandiendo (\ref{eq: celdaPGeneral}) y reemplazando los gradientes por (\ref{eq: gradientes}) , eliminado el termino temporal y agregando todas las consideraciones dichas anteriormente, la ecuación resultante es:
     
     \begin{multline}
-    	\begin{aligned}
-	        c \phi_P V_P &- \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) + \vec{v}\phi_{f_w} \cdot \vec{S_{f_w}} \\ 
-	        &- \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + \vec{v}\phi_{f_e} \cdot \vec{S_{f_e}}  = Q_P V_P    
-        \end{aligned}
-        \label{eq: celdaPGrad}
+    	    Q_P V_P = c  V_P \phi_P - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) + \vec{v}\phi_{f_w} \cdot \vec{S_{f_w}} \\ 
+    	        - \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + \vec{v}\phi_{f_e} \cdot \vec{S_{f_e}}  
+            \label{eq: celdaPGrad}
     \end{multline}
     
     Considerando que
@@ -106,15 +101,13 @@
     \end{equation*}
     
     La ecuación (\ref{eq: celdaPGrad}) puede reducirse, aplicando estas consideraciones y agrupando términos, a:
+    \begin{multline}
+    	    Q_P V_P = c  V_P \phi_P - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) - v_x \phi_{f_w} A \\
+    	        - \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x \phi_{f_e} A
+            \label{eq: celdaPGradVel}
+    \end{multline}
     
-    \begin{equation}
-	    c \phi_P V_P - \frac{\kappa A}{dx} \left( \phi_W - 2 \phi_P + \phi_E \right) + v_x A \left( \phi_{f_e} - \phi_{f_w} \right)  = Q_P V_P
-	 	\label{eq: celdaPGradVel}
-    \end{equation}
-    
-     \begin{enumerate}
-         \item 
-            \textbf{Esquema Centrado para $\phi_{f_i}$} 
+            \subsection{Esquema Centrado para $\phi_{f_i}$} 
             
             Para aproximar $\phi_{fi}$ se utiliza una interpolación lineal entre los centroides que están relacionados por la cara, es decir:
             \begin{equation*}
@@ -133,12 +126,91 @@
             \end{equation*}
             
             Aplicando estas aproximaciones a la ecuación (\ref{eq: celdaPGradVel}) se obtiene:
-    
-    		\begin{equation}
-	    		c \phi_P V_P - \frac{\kappa A}{dx} \left( \phi_W - 2 \phi_P + \phi_E \right) + v_x A \left( \phi_E - \phi_W \right)  = Q_P V_P
-    		\end{equation}
-    
-     \end{enumerate} 
-
-\end{enumerate}
+        \begin{multline}
+    	    Q_P V_P = c  V_P \phi_P - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) - v_x \frac{\phi_P +  \phi_W}{2} A \\ 
+    	        - \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x \frac{\phi_P +  \phi_E}{2} A
+    	        \label{eq: celdaPCentrado}
+        \end{multline}
+            
+        Reagrupando los términos, queda la ecuación utilizada para armar el stencil central de la matriz :
+            \begin{multline}
+    	    Q_P V_P = (c  V_P + 2 \frac{\kappa A}{dx} ) \phi_P + ( -\frac{\kappa A}{dx} - \frac{v_x A}{2}) \phi_W 
+    	    + ( -\frac{\kappa A}{dx} + \frac{v_x A}{2}) \phi_E
+            \label{eq: stencilCentral}
+            \end{multline}
+            
+\section{Condiciones de bordes}
+    \subsection{Condición Dirichlet} 
+    \subsubsection{Izquierda (West)}
+        En este caso $\phi_W$ no existe y se cambia por el termino del valor dado $\bar{\phi}$. \\
+        El término difusivo $\nabla \phi_w$ se cambia por:
+        \begin{equation*}
+        \frac{\kappa A}{\frac{dx}{2}} \left( \bar{\phi} - \phi_P \right)
+        \end{equation*}{}
+        El término advectivo $\phi_{fw}$ se cambia por el valor $\bar{\phi}$ directamente, quedando:
+        \begin{equation*}
+            v_x \bar{\phi} A
+        \end{equation*}
+        Reemplazando estas ecuaciones en ($\ref{eq: celdaPCentrado}$) se obtiene:
+        
+        \begin{multline*}
+    	    Q_P V_P = c  V_P \phi_P - \frac{\kappa 2 A}{dx} \left( \bar{\phi} - \phi_P \right) - v_x \bar{\phi} A \\ 
+    	        - \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x \frac{\phi_P +  \phi_E}{2} A
+        \end{multline*}
+        
+        Reagrupando, el stencil para la condición borde es:
+        
+        \begin{multline}
+    	    Q_P V_P + \frac{\kappa 2 A}{dx} \bar{\phi} + v_x \bar{\phi} A = (c  V_P  + \frac{\kappa 3 A}{dx} + \frac{v_x A}{2}) \phi_P 
+    	    + ( -\frac{\kappa A}{dx} - \frac{v_x A}{2}) \phi_E
+    	    \label{eq:stencilDirW}
+        \end{multline}
+    \subsubsection{Derecha (East)}   
+        Para el caso de la condición en la derecha, el planteno es el mismo, solo que se cambia el término difusivo $\nabla \phi_e$  y el término advectivo $\phi_{fe}$ la ecuación ($\ref{eq: celdaPCentrado}$), resulta:
+        \begin{multline*}
+    	    Q_P V_P = c  V_P \phi_P - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) - v_x \frac{\phi_P +  \phi_W}{2} A \\ 
+    	        - \frac{2 \kappa A}{dx} \left( \bar{\phi} - \phi_P \right) + v_x \bar{\phi} A
+        \end{multline*}
+       El stencil, reagrupando los términos es: 
+        \begin{multline}
+    	    Q_P V_P + \frac{\kappa 2 A}{dx} \bar{\phi} - v_x \bar{\phi} A = (c  V_P  + \frac{\kappa 3 A}{dx} - \frac{v_x A}{2}) \phi_P 
+    	    + ( -\frac{\kappa A}{dx} - \frac{v_x A}{2}) \phi_W
+    	    \label{eq:stencilDirE}
+        \end{multline}
+    \subsection{Condición Neumann}
+        La condición de Neumann establece $-\kappa \nabla \phi_{fi} \vec{n} = \textit{q}$ en la dirección de la normal a la cara. Para los términos difusivos $\nabla \phi_{fi}$ el reemplazo es directo, en la cara el cual esta impuesto el flujo. Para los términos advectivos, el valor en la cara se obtiene a partir de utilizar la ecuación de Taylor $\phi_P = \phi_{fi} + \nabla \phi_{fi} \frac{dx}{2} \vec{n_{fi}}$ por lo tanto  $\phi_{fi} = \phi_P - \nabla \phi_{fi} \frac{dx}{2} \vec{n_{fi}} = \phi_P - (-\frac{q}{\kappa}) \frac{dx}{2}$. 
+       \\ 
+       La ecuación ($\ref{eq: celdaPGeneral}$) se expande y utilizara para hacer los reemplazos necesarios:
+     \begin{multline*}
+        Q_P V_P = c V_p\phi_P  - \kappa \nabla \phi_{fw}   \vec{n_{f_w}} S \vec{n_{f_w}} + \vec{v}\phi_{fw} S \vec{n_{f_e}} \\
+        - \kappa \nabla \phi_{fe} \vec{n_{fe}} S \vec{n_{fe}} + \vec{v}\phi_{fe} S \vec{n_{f_e}}
+    \end{multline*}   
+        \subsubsection{Izquierda (West)}
+        \begin{multline*}
+    	    Q_P V_P = c  V_P \phi_P - A q - v_x 
+    	    (\phi_P  +  \frac{q}{\kappa} \frac{dx}{2})A \\ 
+    	        - \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x \frac{\phi_P +  \phi_E}{2} A
+        \end{multline*}
+        
+        El stencil resultante es:
+        \begin{multline}
+    	    Q_P V_P + A q + v_x A \frac{q}{\kappa} \frac{dx}{2} = (c V_P - v_x A + \frac{\kappa A}{dx} + \frac{v_x A}{2}) \phi_P 
+    	    \\ 
+    	   + (- \frac{\kappa A}{dx} + \frac{v_x A}{2} )\phi_E
+        \end{multline}
+        
+        \subsubsection{Derecha (East)}
+        \begin{multline*}
+    	    Q_P V_P = c  V_P \phi_P - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) - v_x \frac{\phi_P +  \phi_W}{2} A \\ 
+    	        + A q + v_x (\phi_P  +  \frac{q}{\kappa} \frac{dx}{2}) A
+    	        \label{eq: celdaPCentrado}
+        \end{multline*}
+        
+        El stencil resultante es:
+        \begin{multline}
+    	    Q_P V_P - A q - v_x A \frac{q}{\kappa} \frac{dx}{2} = (c V_P + \frac{\kappa A}{dx} - \frac{v_x A}{2} + v_x A) \phi_P 
+    	    \\ 
+    	   + (- \frac{\kappa A}{dx} - \frac{v_x A}{2} )\phi_W
+        \end{multline}
+        
 \end{document}
