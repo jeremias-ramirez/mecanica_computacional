@@ -131,11 +131,10 @@
 
         \begin{multline}
     	    Q_P V_P = c  V_P \phi_P - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) - v_x \frac{\phi_P +  \phi_W}{2} A \\ 
-    	        - \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x \frac{\phi_P +  \phi_E}{2} A
-    	        \label{eq: celdaPCentrado}
+			- \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x \frac{\phi_P +  \phi_E}{2} A
         \end{multline}
             
-        Reagrupando los términos, queda la ecuación utilizada para armar el stencil central de la matriz :
+        Reagrupando los términos, queda la ecuación utilizada para armar el stencil central de la matriz:
 
         \begin{equation}
 			Q_P V_P = \left( c  V_P + 2 \frac{\kappa A}{dx} \right) \phi_P
@@ -144,7 +143,52 @@
             \label{eq: stencilCentral}
         \end{equation}
 
-\section{Condiciones de bordes}
+    \subsection{Esquema Upwind para $\phi_{f_i}$}
+
+		En lugar de aproximar el valor de $\phi_{f_i}$, se utiliza el valor de $phi$ en el centro de la celda que se encuentra "aguas arriba" (upwind):
+
+		\begin{equation*}
+            \begin{aligned}
+			\phi_{f_w} &=
+				\begin{cases}
+				\phi_W, & \text{si} \, v_x > 0 \\
+				\phi_P, & \text{si} \, v_x < 0
+				\end{cases}
+			\\
+			\phi_{f_e} &=
+				\begin{cases}
+				\phi_P, & \text{si} \, v_x > 0 \\
+				\phi_E, & \text{si} \, v_x < 0
+				\end{cases}
+			\end{aligned}
+		\end{equation*}
+
+		En el caso en que $v_x > 0$ la ecuación \ref{eq: celdaPGradVel} se transforma en:
+
+		\begin{equation*}
+			Q_P V_P = c  V_P \phi_P - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) - v_x A \, \phi_W \\
+			- \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x A \, \phi_P
+		\end{equation*}
+
+		Reagrupando los términos, queda la ecuación utilizada para armar el stencil central de la matriz:
+
+		\begin{equation}
+			Q_P V_P = \left( c V_P + 2 \frac{\kappa A}{dx} + v_x A \right) \phi_P
+			+ \left( -\frac{\kappa A}{dx} - v_x A \right) \phi_W
+			-\frac{\kappa A}{dx} \phi_E
+			\label{eq: stencilCentralUpwind1}
+		\end{equation}
+
+		En el caso en que $v_x < 0$, un análisis similar lleva a la siguiente expresión para el stencil de las celdas centrales:
+
+		\begin{equation}
+			Q_P V_P = \left( c V_P + 2 \frac{\kappa A}{dx} - v_x A \right) \phi_P
+			-\frac{\kappa A}{dx} \phi_W
+			+ \left( -\frac{\kappa A}{dx} + v_x A \right)  \phi_E
+			\label{eq: stencilCentralUpwind2}
+		\end{equation}
+
+\section{Condiciones de borde}
     \subsection{Condición Dirichlet} 
     \subsubsection{Izquierda (West)}
         En este caso $\phi_W$ no existe y se cambia por el termino del valor dado $\bar{\phi}$. \\
