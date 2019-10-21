@@ -230,10 +230,11 @@
         La condición de Neumann establece $-\kappa \nabla \phi_{fi} \vec{n} = \textit{q}$ en la dirección de la normal a la cara. Para los términos difusivos $\nabla \phi_{fi}$ el reemplazo es directo, en la cara el cual esta impuesto el flujo. Para los términos advectivos, el valor en la cara se obtiene a partir de utilizar la ecuación de Taylor $\phi_P = \phi_{fi} + \nabla \phi_{fi} \frac{dx}{2} \vec{n_{fi}}$ por lo tanto  $\phi_{fi} = \phi_P - \nabla \phi_{fi} \frac{dx}{2} \vec{n_{fi}} = \phi_P - (-\frac{q}{\kappa}) \frac{dx}{2}$. 
        \\ 
        La ecuación ($\ref{eq: celdaPGeneral}$) se expande y utilizara para hacer los reemplazos necesarios:
-     \begin{multline*}
-        Q_P V_P = c V_p\phi_P  - \kappa \nabla \phi_{fw}   \vec{n_{f_w}} S \vec{n_{f_w}} + \vec{v}\phi_{fw} S \vec{n_{f_e}} \\
+     \begin{multline}
+        Q_P V_P = c V_p\phi_P  - \kappa \nabla \phi_{fw}   \vec{n_{f_w}} S \vec{n_{f_w}} + \vec{v}\phi_{fw} S \vec{n_{f_w}} \\
         - \kappa \nabla \phi_{fe} \vec{n_{fe}} S \vec{n_{fe}} + \vec{v}\phi_{fe} S \vec{n_{f_e}}
-    \end{multline*}   
+        \label{eq: generalExpandida}
+    \end{multline}   
         \subsubsection{Izquierda (West)}
         \begin{multline*}
     	    Q_P V_P = c  V_P \phi_P - A q - v_x 
@@ -261,5 +262,84 @@
     	    \\ 
     	   + (- \frac{\kappa A}{dx} - \frac{v_x A}{2} )\phi_W
         \end{multline}
-        
+    \subsection{Condición Robin}
+    La condición de Robin, establece los siguiente:
+    \begin{equation*}
+        \kappa \nabla \phi_{fi} \vec{n} + h (\phi_{fi} - \phi_{\infty}) = 0
+    \end{equation*}{}
+    En este caso se tiene dos incógnitas necesarias, para poder obtenerla se plantea otras ecuación, y así armar un sistema con dos ecuaciones. La ecuación que se plantea es la aproximación de Serie de Taylor.
+    \begin{equation*}
+        \phi_P = \phi_{fi} + \nabla \phi_{fi} \vec{n} \delta_{fi}
+    \end{equation*}{}
+    Con estas dos ecuaciones se plantea el siguiente sistema:
+   \[ 
+   \begin{bmatrix}
+        h && \kappa \vec{n} \\
+        1 && \vec{n} \delta_{fi}
+   \end{bmatrix}
+   \begin{bmatrix}
+        \phi_{fi} \\
+        \nabla \phi_{fi}
+   \end{bmatrix}
+   =
+   \begin{bmatrix}
+   h \phi_{\infty} \\
+   \phi_P
+   \end{bmatrix}
+   \]
+  Obteniendo los siguientes resultados:
+  \begin{equation}
+      \begin{aligned}
+         \phi_{fi} = -\frac{h \phi_{\infty} \delta_{fi}}{\kappa - h \delta_{fi}} + \frac{\kappa \phi_P} {\kappa - h \delta_{fi}} \\
+         \nabla \phi_{fi} \vec{n} = \frac{h \phi_{\infty}} {\kappa - h \delta_{fi}} - \frac{h \phi_P}  {\kappa - h \delta_{fi}}
+      \end{aligned}
+      \label{eq: robinIncognitas}
+  \end{equation}
+  \subsubsection{Izquierda (West)}
+  Sustituyendo los resultado de ($\ref{eq: robinIncognitas}$)  en la ecuación ($\ref{eq: generalExpandida}$) se obtiene:
+  
+  \begin{multline*}
+        Q_P V_P = c V_p\phi_P   \\
+        - \kappa  \big( \frac{h \phi_{\infty}} {\kappa - h \delta_{fi}} - \frac{h \phi_P}  {\kappa - h \delta_{fi}} \big) S \vec{n_{f_w}} + \vec{v}   \big (-\frac{h \phi_{\infty} \delta_{fi}}{\kappa - h \delta_{fi}} + \frac{\kappa \phi_P} {\kappa - h \delta_{fi}} \big) S \vec{n_{f_w}} \\
+        - \kappa \nabla \phi_{fe} \vec{n_{fe}} S \vec{n_{fe}} + \vec{v}\phi_{fe} S \vec{n_{f_e}}
+    \end{multline*} 
+    Reagrupos los términos:
+    
+    \begin{multline*}
+        Q_P V_P + \kappa \frac{h \phi_{\infty}} {\kappa - h \delta_{fi}} S \vec{n_{f_w}} + \vec{v}  \frac{h \phi_{\infty} \delta_{fi}}{\kappa - h \delta_{fi}} S \vec{n_{f_w}} =  \\
+        \big( c V_p + \kappa  \frac{h }  {\kappa - h \delta_{fi}} S \vec{n_{f_w}} + \vec{v} \frac{\kappa} {\kappa - h \delta_{fi}} S \vec{n_{f_w}} \big) \phi_P  \\
+        - \kappa \nabla \phi_{fe} \vec{n_{fe}} S \vec{n_{fe}} + \vec{v}\phi_{fe} S \vec{n_{f_e}}
+    \end{multline*} 
+   Teniendo en cuenta que para 1D de malla uniforme $\delta_{fi} = dx/2$, $\vec{n_{fw}} = -1$ y reemplazando todos los términos por las aproximaciones establecidas, la ecuación obtenida es:
+   \begin{multline*}
+        Q_P V_P - \kappa \frac{h \phi_{\infty}} {\kappa - h \delta_{fi}} A - v_x  \frac{h \phi_{\infty} \delta_{fi}}{\kappa - h \delta_{fi}} A  =  \\
+        \big( c V_p - \kappa  \frac{h}  {\kappa - h \delta_{fi}} S - v_x \frac{\kappa} {\kappa - h \delta_{fi}} A \big) \phi_P  \\
+        - \frac{\kappa A}{dx} \left( \phi_E - \phi_P \right) + v_x \frac{\phi_P +  \phi_E}{2} A
+    \end{multline*}
+    
+    El stencil resultantes es:
+    
+    \begin{multline}
+        Q_P V_P - \kappa \frac{h \phi_{\infty}} {\kappa - h \delta_{fi}} A - v_x  \frac{h \phi_{\infty} \delta_{fi}}{\kappa - h \delta_{fi}} A  =  \\
+        \big( c V_p - \kappa  \frac{h}  {\kappa - h \delta_{fi}} S - v_x \frac{\kappa} {\kappa - h \delta_{fi}} A + \frac{\kappa A}{dx} + \frac{v_x A}{2} \big) \phi_P  \\
+        \big( - \frac{\kappa A}{dx} + \frac{v_x A}{2} \big) \phi_E
+        \label{eq:stencilRobW}
+    \end{multline} 
+  \subsubsection{Derecha (East)}
+    Para la derecha se tiene en cuenta que $\vec{n_{fe}} = 1$, y asiendo los mismo reemplazos se llega a:
+    
+    \begin{multline*}
+        Q_P V_P + \kappa \frac{h \phi_{\infty}} {\kappa - h \delta_{fi}} A + v_x  \frac{h \phi_{\infty} \delta_{fi}}{\kappa - h \delta_{fi}} A  =  \\
+        \big( c V_p + \kappa  \frac{h}  {\kappa - h \delta_{fi}} S + v_x \frac{\kappa} {\kappa - h \delta_{fi}} A \big) \phi_P  \\
+        - \frac{\kappa A}{dx} \left( \phi_W - \phi_P \right) - v_x \frac{\phi_P +  \phi_W}{2} A
+    \end{multline*}
+    Con el siguiente stencil resultante:
+    
+    \begin{multline}
+        Q_P V_P + \kappa \frac{h \phi_{\infty}} {\kappa - h \delta_{fi}} A + v_x  \frac{h \phi_{\infty} \delta_{fi}}{\kappa - h \delta_{fi}} A  =  \\
+        \big( c V_p + \kappa  \frac{h}  {\kappa - h \delta_{fi}} S + v_x \frac{\kappa} {\kappa - h \delta_{fi}} A  + \frac{ \kappa A}{dx} - \frac{ v_x A}{2} \big) \phi_P  \\
+        \big( - \frac{\kappa A}{dx} - \frac{v_x A}{2} \big) \phi_W
+        \label{eq:stencilRobE}
+    \end{multline}
+  
 \end{document}
