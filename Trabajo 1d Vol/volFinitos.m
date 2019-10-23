@@ -1,4 +1,7 @@
 source "getSystemVol.m"
+source "getBordesIzqVol.m"
+source "getBordesDerVol.m"
+
 
 function [xnode, T] = volFinitos (model, cb, et)
 	
@@ -14,10 +17,14 @@ function [xnode, T] = volFinitos (model, cb, et)
 
 	if et == 0
 		T = M \ F;
+		[xnode, T] = getBordesIzqVol(T, xnode, model, cb(1, :)');  
+		[xnode, T] = getBordesDerVol(T, xnode, model, cb(2, :)');  
+
 		return	
 	end
 	
-	TI = model.TI;
+	%TI = model.TI;
+	TI = zeros(N, 1);
 
 	if cb(1,1) == 1
 		TI(1,1) = cb(1,2);
@@ -27,9 +34,8 @@ function [xnode, T] = volFinitos (model, cb, et)
 		TI(N,1) = cb(2,2);
 	end
 
-	figure(1)
 	
-	showNoEstacionarioV(M, F, TI, et, dx, model, xnode)
+	T = esquemaTemporal(M, F, TI, et, N, model, xnode);
 
 end
 

@@ -12,10 +12,19 @@ function [M, F] =  getSystemVol(N, model, cb)
 	t = 1;
 	A = dy * t;
 	V = A * model.dx;
+	if model.upwind == 0
+		a = -A * v / 2 - k * A / dx; 
+		b = c * V +  2 * k * A / dx ;
+		c = v * A / 2 - k * A / dx;
+	else
+		if model.v > 0
+			a = -A * v - k * A / dx; 
+			b = c * V +  2 * k * A / dx + model.v * A;
+			c = - k * A / dx;
+		end
+		%falta para v < 0
 
-	a = -A * v / 2 - k * A / dx; 
-	b = c * V +  2 * k * A / dx ;
-	c = v * A / 2 - k * A / dx;
+	end
 
 	if length(G) == 1
 		G = ones(N,1) * G;
