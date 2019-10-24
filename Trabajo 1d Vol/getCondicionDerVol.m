@@ -28,9 +28,12 @@ function [M, F] = getCondicionDerVol(M, F, S, model, cbD)
 				F(N,1) = F(N, 1) + model.k * c * S - model.v * S * a;
 			else 
 				if model.v > 0
-					M(N, N) = M(N, N) - model.k * S / dx - model.v * S + model.v * S * b - model.k * d * S; 		
-					F(N,1) = F(N, 1) + model.k * c * S - model.v * S * a;
 
+					M(N, N) = M(N, N) - model.k * S / dx - model.v * S + model.v * S - model.k * d * S; 		
+					F(N,1) = F(N, 1) + model.k * c * S;
+
+					%M(N, N) = M(N, N) - model.k * S / dx - model.v * S + model.v * S * b - model.k * d * S; 		
+					%F(N,1) = F(N, 1) + model.k * c * S - model.v * S * a;
 
 				end
 			end

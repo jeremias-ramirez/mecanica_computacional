@@ -17,13 +17,13 @@ cb'
 
 model.dx = (model.xF - model.xI) / 10;
 [xnodeV1, T1] = volFinitos(model, cb, et);
-
+T1
 model.dx = (model.xF - model.xI) / 20;
 [xnodeV2, T2] = volFinitos(model, cb, et);
-
+T2
 model.dx = (model.xF - model.xI) / 50;
 [xnodeV3, T3] = volFinitos(model, cb, et);
-
+T3
 figure(1)
 plot(xnodeV1, T1, xnodeV2, T2, xnodeV3, T3 )
 title("Soluciones")
@@ -31,7 +31,7 @@ xlabel("x")
 ylabel("Temperatura")
 h = legend("Sol. aproximada 10 celdas", "Sol. aproximada 20 celdas", "Sol. aproximada 50 celdas");
 legend(h, "location", "northwest");
-saveas(1, "ejer2Funciones.jpg")
+%saveas(1, "ejer2Funciones.jpg")
 
 %Prueba temporal
 %et = 2
