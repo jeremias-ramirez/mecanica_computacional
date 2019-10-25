@@ -13,7 +13,7 @@ function [xnode, T] = getBordesDerVol(T, xnode, model, cbD)
 			a = (cbD(2) * cbD(3) * (dx/2) ) / den;
 			b = model.k / den;
 			phi_borde = a + b * T(end);
-
+		
 	end
 	T = [T; phi_borde];
 end
