@@ -17,10 +17,11 @@ solAnalitica = @(x, Pe) (exp(Pe) - exp(Pe .* x)) / (exp(Pe) - 1);
 
 iter = 5:100;
 e = zeros(size(iter),1);
-
+dxV = zeros(size(iter),1);
 for i = iter 
 	dx = (model.xF - model.xI)/i;
 	model.dx = dx;
+	dxV(i-4) = dx;
 
 	xnode = [0; [0+dx/2:dx:1-dx/2]'; 1];
 	T1 = solAnalitica(xnode, Pe);
@@ -28,11 +29,11 @@ for i = iter
 	e(i-4) = norm(T2-T1,2);
 end
 figure(1)
-plot(iter, log(e))
+plot(log(dxV), log(e))
 title("Grafica log(error)")
 xlabel("cantidad de celdas (N)")
 ylabel("log(e)")
-saveas(1, "ejer1bpe1.jpg")
+%saveas(1, "ejer1bpe1.jpg")
 
-(log(e(96))-log(e(1)))/95
+(log(e(96))-log(e(1)))/(log(e(96))-log(e(1)))
 
