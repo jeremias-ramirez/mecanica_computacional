@@ -44,8 +44,25 @@ function [T] = esquemaTemporal(M, F, TI, et, N, model, xnode)
 					break;
 				end
 				TI = TN;
-				
-				
+			end
+
+        case 3
+
+            rhoCp_dt = rhoCp / dt;
+            k_izquierda = rhoCp_dt * I + (1/2) * M;
+            k_derecha = rhoCp_dt * I - (1/2) * M
+
+            for n = 1:iterMax
+
+                FF = F + k_derecha * TI;
+                TN = k_izquierda \ FF;
+                err = norm(TN - TI, 2) / norm(TN, 2);
+                T = [T, TN];
+
+                if err < tol
+                    break;
+                end
+                TI = TN;
 			end
 	end
 end
