@@ -1,55 +1,46 @@
 function [Q] = fvm2d_flux(PHI,cells,neighb)
-% Descripción: módulo calcular el flujo de calor en todo el dominio. Se aplica la 
-% Ley de Fourier y se evalúa como fluye el calor en todos los centros de celdas del
-% dominio.
+    Qx = zeros(size(neighb,1),1);
+    Qy = zeros(size(neighb,1),1);
+    
+    PHI = full(PHI);
+    
+    cx = zeros(size(neighb,1),1);
+    cy = zeros(size(neighb,1),1);
 
-% Entrada:
-% * PHI: vector solución. Cada elemento del vector representa un valor escalar }
-% asociado a cada celda de la malla, y su posición dentro del vector depende de 
-% cómo se especificó en icone.
-% * neighb: matriz de vecindad.
-% * cells: vector de celdas.
+    for P = 1 : size(neighb,1)
+        S = neighb(P,1);
+        E = neighb(P,2);
+        N = neighb(P,3);
+        W = neighb(P,4);
 
-% Salida:
-% * Q: vector de flujo de calor. Se forma de una componente en sentido x, Qx, y 
-% una componente en sentido y, Qy.
-% ----------------------------------------------------------------------    
-
-	N = size(cells, 2);
-    Qx = zeros(N, 1);
-    Qy = zeros(N, 1);
-  
-    for P = 1 : N
-        S = neighb(P, 1);
-        E = neighb(P, 2);
-        N = neighb(P, 3);
-        W = neighb(P, 4);
-        
         if (E ~= -1 && W ~= -1)
-            dxe = cells(P).de;
-            dxw = cells(P).dw;
-            Qx(P) = (PHI(E) - PHI(W)) / (dxe + dxw);
+            dE = cells(P).de;
+            dW = cells(P).dw;
+            fx = dE / (dE + dW);
+            k = fx*cells(P).ke + (1-fx)*cells(P).kw;
+            Qx(P) = -k * (PHI(E) - PHI(W)) / (dE + dW);
         elseif (E ~= -1)
-            dx = cells(P).de;
-            Qx(P) = (PHI(E) - PHI(P)) / dx;
+            Qx(P) = -cells(P).ke * (PHI(E) - PHI(P)) / cells(P).de;
         else
-            dx = cells(P).dw;
-            Qx(P) = (PHI(P) - PHI(W)) / dx;
+            Qx(P) = -cells(P).kw * (PHI(P) - PHI(W)) / cells(P).dw;
         end
         
         if (N ~= -1 && S ~= -1)
-            dyn = cells(P).dn;
-            dys = cells(P).ds;
-            Qy(P) = (PHI(N) - PHI(S)) / (dyn + dys);
+            dN = cells(P).dn;
+            dS = cells(P).ds;
+            fx = dN / (dN + dS);
+            k = fx*cells(P).ks + (1-fx)*cells(P).kn;
+            Qy(P) = -k * (PHI(N) - PHI(S)) / (dN + dS);
         elseif (N ~= -1)
-            dy = cells(P).dn;
-            Qy(P) = (PHI(N) - PHI(P)) / dy;
+            Qy(P) = -cells(P).kn * (PHI(N) - PHI(P)) / cells(P).dn;
         else
-            dy = cells(P).ds;
-            Qy(P) = (PHI(P) - PHI(S)) / dy;
+            Qy(P) = -cells(P).ks * (PHI(P) - PHI(S)) / cells(P).ds;
         end
+
+        cx(P) = cells(P).cx;
+        cy(P) = cells(P).cy;
     end
     
-    Q = [Qx, Qy];
-
+    Q = [Qx Qy];
 end
+
