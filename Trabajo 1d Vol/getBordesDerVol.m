@@ -9,10 +9,16 @@ function [xnode, T] = getBordesDerVol(T, xnode, model, cbD)
 		case 2
 			phi_borde = T(end) - cbD(2) * dx / (2 * model.k);
 		case 3
-			den = model.k + (dx/2 * cbD(2));
-			a = (cbD(2) * cbD(3) * (dx/2) ) / den;
-			b = model.k / den;
-			phi_borde = a + b * T(end);
+			if model.upwind == 0
+				den = model.k + (dx/2 * cbD(2));
+				a = (cbD(2) * cbD(3) * (dx/2) ) / den;
+				b = model.k / den;
+				phi_borde = a + b * T(end);
+			else
+				if model.v > 0
+					phi_borde = T(end);
+				end
+			end
 		
 	end
 	T = [T; phi_borde];
