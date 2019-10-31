@@ -39,16 +39,14 @@ for i = iter
 	e2(i-4) = sum((T4-T3).^2) / length(xnodeV);
 	e(i-4) = sum((T2-T1).^2) / length(xnodeV);
 end
+
 figure(1)
 plot(log(dxV), log(e), log(dxV), log(e2))
-title("Grafica log(error)")
-xlabel("cantidad de celdas (N)")
-ylabel("log(e)")
-%saveas(1, "ejer1bpe1.jpg")
+legend("Esquema centrado - Pe = 1", "Esquema upwind - Pe = 10")
+title("Error cuadrático medio para distintos refinamientos de malla")
+xlabel("log(dx)")
+ylabel("log(error)")
+grid on
 
-(log(e(96))-log(e(1)))/(log(dxV(96))-log(dxV(1)))
-
-log(e2(96)-e2(1))/(log(dxV(96)-dxV(1)))
-
-log(e2(96)) / log(dxV(96))
-
+pendienteCentrado = (log(e(96))-log(e(1)))/(log(dxV(96))-log(dxV(1)))
+pendienteUpwind = (log(e2(96))-log(e2(1)))/(log(dxV(96))-log(dxV(1)))
