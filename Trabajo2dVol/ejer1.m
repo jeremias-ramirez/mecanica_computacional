@@ -720,7 +720,6 @@ DIR = [
       22, 20.0000000000000000, 4;
       23, 20.0000000000000000, 4;
       24, 20.0000000000000000, 4;
-      
      177, 30.0000000000000000, 2;
      178, 30.0000000000000000, 2;
      179, 30.0000000000000000, 2;
@@ -737,7 +736,6 @@ DIR = [
      190, 30.0000000000000000, 2;
      191, 30.0000000000000000, 2;
      192, 30.0000000000000000, 2;
-     
      313, 20.0000000000000000, 2;
      314, 20.0000000000000000, 2;
      315, 20.0000000000000000, 2;
@@ -758,7 +756,6 @@ NEU = [
       73, 20.0000000000000000, 1;
       96, 0.0000000000000000, 3;
       97, 20.0000000000000000, 1;
-      
      120, 0.0000000000000000, 3;
      121, 20.0000000000000000, 1;
      144, 0.0000000000000000, 3;
@@ -766,7 +763,6 @@ NEU = [
      168, 0.0000000000000000, 3;
      169, 20.0000000000000000, 1;
      192, 0.0000000000000000, 3;
-     
      193, 20.0000000000000000, 1;
      201, 20.0000000000000000, 1;
      209, 20.0000000000000000, 1;
@@ -1795,22 +1791,8 @@ model.PHI_n = zeros(model.ncells,1);
 
 disp('Iniciando el método numérico...');
 
-model.maxit = 1000;
-
 % Llamada principal al Método de Volúmenes Finitos
-[PHI,Q, cells] = fvm2d(xnode,icone,DIR,NEU,ROB,model);
-%hold on
-
-%plot([1:1161]*model.dt, PHI(90,:), [1:1161]*model.dt, PHI(244,:))
-
-% Condición inicial
-model.maxit = 4000;
-model.PHI_n = PHI(:,end);
-model.G *= 0;
-[PHI,Q, cells] = fvm2d(xnode,icone,DIR,NEU,ROB,model);
-
-%plot([1:1161]*model.dt, PHI(90,:), [1:1161]*model.dt, PHI(244,:))
-%legend("celda 90", "celda 244")
+[PHI,Q,cells] = fvm2d(xnode,icone,DIR,NEU,ROB,model);
 
 disp('Finalizada la ejecución del método numérico.');
 
@@ -1834,6 +1816,26 @@ disp('Iniciando el post-procesamiento...');
 mode = 0;
 graph = 0;
 [neighb] = fvm2d_neighbors(icone);
-fvm2d_graph_mesh(PHI(:,end),Q(:,end),xnode,icone,neighb,DIR,NEU,ROB,model,mode,graph);
+%fvm2d_graph_mesh(PHI,Q,xnode,icone,neighb,DIR,NEU,ROB,model,mode,graph);
 
 disp('Finalizado el post-procesamiento.');
+
+% Cosas para el Ejercicio 1 del TP
+
+% Inciso (e) - Máxima temperatura en la placa y coordenadas de esa celda
+[valor, celda] = max(PHI(:, end));
+xCeldaMax = cells(celda).cx;
+yCeldaMax = cells(celda).cy;
+
+% Inciso (f) - Temperatura en las celdas 90 y 244
+tCelda90 = PHI(90,:);
+tCelda244 = PHI(244,:);
+tiempo = (1:length(tCelda90)) * model.dt;
+figure()
+plot(tiempo, tCelda90, "linewidth", 2, ...
+     tiempo, tCelda244, "linewidth", 2);
+legend("Celda 90", "Celda 244")
+title("Evolución de la temperatura - Celdas 90 y 244")
+xlabel("Tiempo [s]")
+ylabel("Temperatura [°C]")
+grid on
