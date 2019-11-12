@@ -1,6 +1,6 @@
-source "getMatrixTriang.m"
-source "getCondicionIzqVol.m"
-source "getCondicionDerVol.m"
+%source "getMatrixTriang.m"
+%source "getCondicionIzqVol.m"
+%source "getCondicionDerVol.m"
 
 function [M, F] =  getSystemVol(N, model, cb)
 	k = model.k;

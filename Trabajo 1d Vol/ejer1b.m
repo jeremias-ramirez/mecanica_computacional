@@ -1,4 +1,4 @@
-source "volFinitos.m"
+%source "volFinitos.m"
 
 model = struct();
 model.k = 1;
@@ -8,7 +8,7 @@ model.xI = 0;
 model.xF = 1;
 model.G = 0 ;
 model.upwind = 0;
-Pe = 10;
+Pe = 1;
 model.v = Pe;
 et = 0;
 cb = [[1,1,-1] ; [1,0,-1]];
@@ -40,9 +40,9 @@ for i = iter
 	e(i-4) = sum((T2-T1).^2) / length(xnodeV);
 end
 
-figure(1)
+figure
 plot(log(dxV), log(e), log(dxV), log(e2))
-legend("Esquema centrado - Pe = 1", "Esquema upwind - Pe = 10")
+legend("Esquema centrado - Pe = 1", "Esquema upwind - Pe = 10", "location", "southeast")
 title("Error cuadrático medio para distintos refinamientos de malla")
 xlabel("log(dx)")
 ylabel("log(error)")
