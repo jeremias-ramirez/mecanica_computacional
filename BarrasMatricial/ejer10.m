@@ -42,41 +42,6 @@ U = Kd\Fd;
 [Def,Ten] = barras_DT(xnode,icone,propiedades, model,U);
 reaction = K*U;
 
-function graficarArmadura(xnode, icone, nbarras, U, nodo)
-   hold on
-   
-    for barra = 1 : nbarras
-        indiceNodo1 = icone(barra, 1);
-        indiceNodo2 = icone(barra, 2);
-        nodo1 = xnode(indiceNodo1, :);
-        nodo2 = xnode(indiceNodo2, :);
-        x = [nodo1(1) nodo2(1)]';
-        y = [nodo1(2) nodo2(2)]';
-        plot(x, y, "bo-")
-
-        indiceGlobalU1 = indiceNodo1*2 - 1;
-        indiceGlobalV1 = indiceNodo1*2;
-        indiceGlobalU2 = indiceNodo2*2 - 1;
-        indiceGlobalV2 = indiceNodo2*2;
-        xNuevo = x + U([indiceGlobalU1 indiceGlobalU2]);
-        yNuevo = y + U([indiceGlobalV1 indiceGlobalV2]);
-        plot(xNuevo, yNuevo, "ro-")
-    end
-    
-    hold off
-    
-    title(["Nodo " num2str(nodo)])
-    xlabel("x [metros]")
-    ylabel("y [metros]")
-    grid on
-    
-    xNodo = xnode(nodo, 1);
-    yNodo = xnode(nodo, 2);
-    deltaLim = 1.5e-2;
-    xlim([xNodo-deltaLim xNodo+deltaLim])
-    ylim([yNodo-deltaLim yNodo+deltaLim])
-end
-
 puntosDerecha = xnode([2 1], :);
 puntosDerecha(:, 1) = -puntosDerecha(:, 1);
 uPuntosDerecha = U([3 4 1 2]);
@@ -96,10 +61,42 @@ modelAmpliado.nbarras = size(iconeAmpliado, 1);
 figure
 for nodo = 1 : modelAmpliado.nnodes
     subplot(2, 3, nodo)
-    graficarArmadura(xnodeAmpliado, iconeAmpliado, modelAmpliado.nbarras, uAmpliado, nodo)
+    hold on
+   
+    for barra = 1 : modelAmpliado.nbarras
+        indiceNodo1 = iconeAmpliado(barra, 1);
+        indiceNodo2 = iconeAmpliado(barra, 2);
+        nodo1 = xnodeAmpliado(indiceNodo1, :);
+        nodo2 = xnodeAmpliado(indiceNodo2, :);
+        x = [nodo1(1) nodo2(1)]';
+        y = [nodo1(2) nodo2(2)]';
+        handles(1) = plot(x, y, "bo-");
+
+        indiceGlobalU1 = indiceNodo1*2 - 1;
+        indiceGlobalV1 = indiceNodo1*2;
+        indiceGlobalU2 = indiceNodo2*2 - 1;
+        indiceGlobalV2 = indiceNodo2*2;
+        xNuevo = x + uAmpliado([indiceGlobalU1 indiceGlobalU2]);
+        yNuevo = y + uAmpliado([indiceGlobalV1 indiceGlobalV2]);
+        handles(2) = plot(xNuevo, yNuevo, "ro-");
+    end
+    
+    xNodo = xnodeAmpliado(nodo, 1);
+    yNodo = xnodeAmpliado(nodo, 2);
+    handles(3) = quiver(xNodo, yNodo, uAmpliado(nodo*2-1), uAmpliado(nodo*2), "k", "linewidth", 2, "maxheadsize", 0.1);
+    
+    hold off
+    
+    title(["Nodo " num2str(nodo)])
+    xlabel("x [metros]")
+    ylabel("y [metros]")
+    deltaLim = 1.5e-2;
+    xlim([xNodo-deltaLim xNodo+deltaLim])
+    ylim([yNodo-deltaLim yNodo+deltaLim])
+    grid on
 end
 
-hleg = legend("Configuración inicial", "Configuración final");
+hleg = legend(handles, {"Configuración inicial", "Configuración final", "Desplazamiento"});
 newPosition = [0.875 0.8 0.085 0.1];
 newUnits = 'normalized';
 set(hleg, 'Position', newPosition, 'Units', newUnits);
