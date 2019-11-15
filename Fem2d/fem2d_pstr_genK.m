@@ -12,10 +12,46 @@ function [localK] = fem2d_pstr_genK(nodes,D,th)
 % * localK: matriz de rigidez del elemento (local).
 % ----------------------------------------------------------------------
 
-% Si el elemento es triangular, localK tiene que ser 3x3 y B de 3x6
-% Si es un cuadrángulo, localK tiene que ser 4x4 y B de 
+% Si el elemento es triangular, localK tiene que ser 6x6 y B de 3x6
+% Si es un cuadrángulo, localK tiene que ser 8x8 y B de 3x8
 
-% localK = B' * D * B
+    formanTriangulo = @(nodos) size(nodos,1) == 3;
 
-    localK = [];
+    if formanTriangulo(nodes)
+        x = nodes(:, 1);
+        y = nodes(:, 2);
+        
+        J = [x(2)-x(1)  y(2)-y(1);
+             x(3)-x(1)  y(3)-y(1)];
+        DN = [-1 1 0; -1 0 1];
+        V = inv(J)*DN;
+        B = [V(1,1)     0     V(1,2)     0     V(1,3)     0   ;
+               0      V(2,1)    0      V(2,2)    0      V(2,3);
+             V(2,1)   V(1,1)  V(2,2)   V(1,2)  V(2,3)   V(1,3)];
+        
+        A = 0.5;    % Area del triangulo master
+        localK = B' * D * B * det(J) * A * th;
+    else 
+        % cuatro puntos de Gauss con peso w=1
+        p = [-1 -1;
+              1 -1;
+              1  1;
+             -1  1];
+        p *= sqrt(3)/3;
+        localK = zeros(8);
+        
+        for ii = 1 : 4
+                s = p(ii,1);
+                t = p(ii,2);
+                DNnum = [(-1+t)/4   (1-t)/4    (1+t)/4   (-1-t)/4;
+                         (-1+s)/4   (-1-s)/4   (1+s)/4   (1-s)/4];
+                J = DNnum*nodes;
+                V = inv(J)*DNnum;
+                B = [V(1,1)     0     V(1,2)     0     V(1,3)     0     V(1,4)     0;
+                       0      V(2,1)    0      V(2,2)    0      V(2,3)    0      V(2,4);
+                     V(2,1)   V(1,1)  V(2,2)   V(1,2)  V(2,3)   V(1,3)  V(2,4)   V(1,4)];
+                
+                localK += B' * D * B * det(J) * th;
+        end
+    end
 end
