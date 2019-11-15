@@ -6,7 +6,7 @@ function [Def_prom,Ten_prom,Ten_VM] = fem2d_pstr_DT(xnode,icone,model,D,U)
     
     for elemento = 1 : model.nelem
         
-        if (esTriangular(elemento))
+        if esTriangular(elemento)
             indicesNodos = icone(elemento,1:3);
         else
             indicesNodos = icone(elemento,:);
@@ -20,7 +20,7 @@ function [Def_prom,Ten_prom,Ten_VM] = fem2d_pstr_DT(xnode,icone,model,D,U)
         nodos = xnode(indicesNodos,:);
         desplazamientos = U(indicesU);
         
-        if (esTriangular(elemento))
+        if esTriangular(elemento)
             x = nodos(:, 1);
             y = nodos(:, 2);
             
