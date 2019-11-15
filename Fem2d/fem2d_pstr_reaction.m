@@ -6,7 +6,7 @@ function [reaction] = fem2d_pstr_reaction(K,F,U,Fixnodes)
         reaction = [];
     else
         reaction = sparse(size(U,1),1);
-        fix = 2*Fixnodes(:,1)+Fixnodes(:,2)-2;
+        fix = 2*Fixnodes(:,1) + Fixnodes(:,2) - 2;
         reaction(fix) = K(fix,:) * U - F(fix);
     end
 end
