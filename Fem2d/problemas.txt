@@ -1,0 +1,17 @@
+DT
+==========
+Para el caso cuadrangular, la cuadratura de Gauss usa puntos incorrectos.
+Las coordenadas son todas unitarias, pero tendrian que ser sqrt(3)/3.
+Prometheus lo valida como OK, lo que tendría que ser un error.
+En cambio, para genK usando los puntos correctos, Prometheus también valida bien.
+
+genF
+==========
+Para el caso triangular, para cada nodo el resultado de la integral
+es -Fg * A * th / 3 (constante). Deberíamos sumar las contribuciones de cada nodo,
+dando como resultado un localF = -Fg * A * th.
+Pero Prometheus valida lo primero como bien, y lo segundo como incorrecto.
+Acá ver si el problema está en la validación o si entendí mal cómo calcular el
+aporte de la fuerza gravitatoria.
+
+Algo similar para el caso cuadrangular.
