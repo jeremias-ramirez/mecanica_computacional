@@ -19,13 +19,14 @@ function [K,F] = fem2d_pstr_fixnodes(K,F,Fixnodes)
 % aplicar la condición de borde.
 % ----------------------------------------------------------------------
 
-    for i = 1 : size(Fixnodes,1)
-        iNodoL = Fixnodes(i,1);
-        iNodoG = 2*iNodoL - (2 - Fixnodes(i,2));
-        desp = Fixnodes(i,3);
+    for ii = 1 : size(Fixnodes, 1)
+        indiceNodo = Fixnodes(ii, 1);
+        direccion = Fixnodes(ii, 2);
+        desplazamiento = Fixnodes(ii, 3);
+        indiceGlobal = 2*indiceNodo + (direccion - 2);
         
-        K(iNodoG, :) = 0;
-        K(iNodoG, iNodoG) = 1;
-        F(iNodoG) = desp;
+        K(indiceGlobal, :) = 0;
+        K(indiceGlobal, indiceGlobal) = 1;
+        F(indiceGlobal) = desplazamiento;
     end
 end
