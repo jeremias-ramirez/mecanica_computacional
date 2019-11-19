@@ -18,4 +18,15 @@ function [F] = fem2d_pstr_sideload(F,Sideload,xnode,th)
 
 % Acá no importa si el elemento es triangular o cuadrangular. Seguro?
 
+    for i = 1 : size(Sideload, 1)
+        iNodo1 = Sideload(i,1);
+        iNodo2 = Sideload(i,2);
+        fx = Sideload(i,3);
+        fy = Sideload(i,4);
+        
+        long = norm(xnode(iNodo1,:) - xnode(iNodo2,:));
+        
+        F([(2*iNodo1-1) 2*iNodo1 (2*iNodo2-1) 2*iNodo2]) = F([(2*iNodo1-1) 2*iNodo1 (2*iNodo2-1) 2*iNodo2]) + ...
+        0.5 * long * [fx fy fx fy]' * th;
+    end
 end
