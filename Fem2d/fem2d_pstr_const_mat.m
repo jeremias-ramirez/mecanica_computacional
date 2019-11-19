@@ -11,10 +11,12 @@ function [D] = fem2d_pstr_const_mat(model)
 % * D: matriz constitutiva del sistema.
 % ----------------------------------------------------------------------
 
+    esTensionPlana = @(model) model.pstrs == 1;
+
     E = model.young;
     v = model.poiss;
 
-    if (model.pstrs == 1) %considero que si es uno es Tension Plana 
+    if esTensionPlana(model)
         D = E / (1- v^2) * [1 v 0 ; v 1 0 ; 0 0 (1-v)/2];
     else
         aux1 = E*(1-v) / ((1 +v ) * (1 - 2 * v));
