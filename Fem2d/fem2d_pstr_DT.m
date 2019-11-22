@@ -45,19 +45,19 @@ function [Def_prom,Ten_prom,Ten_VM] = fem2d_pstr_DT(xnode,icone,model,D,U)
                  -1  1];
             
             for ii = 1 : 4
-                    s = p(ii,1);
-                    t = p(ii,2);
-                    DNnum = [(-1+t)/4   (1-t)/4    (1+t)/4   (-1-t)/4;
-                             (-1+s)/4   (-1-s)/4   (1+s)/4   (1-s)/4];
-                    J = DNnum*nodos;
-                    V = inv(J)*DNnum;
-                    B = [V(1,1)     0     V(1,2)     0     V(1,3)     0     V(1,4)     0;
-                           0      V(2,1)    0      V(2,2)    0      V(2,3)    0      V(2,4);
-                         V(2,1)   V(1,1)  V(2,2)   V(1,2)  V(2,3)   V(1,3)  V(2,4)   V(1,4)];
-                    
-                    Def_xy = (B*desplazamientos)';
-                    Def(indicesNodos(ii),1:3) += Def_xy;
-                    Def(indicesNodos(ii),4) += 1;
+                s = p(ii,1);
+                t = p(ii,2);
+                DNnum = [(-1+t)/4   (1-t)/4    (1+t)/4   (-1-t)/4;
+                         (-1+s)/4   (-1-s)/4   (1+s)/4   (1-s)/4];
+                J = DNnum*nodos;
+                V = inv(J)*DNnum;
+                B = [V(1,1)     0     V(1,2)     0     V(1,3)     0     V(1,4)     0;
+                       0      V(2,1)    0      V(2,2)    0      V(2,3)    0      V(2,4);
+                     V(2,1)   V(1,1)  V(2,2)   V(1,2)  V(2,3)   V(1,3)  V(2,4)   V(1,4)];
+                
+                Def_xy = (B*desplazamientos)';
+                Def(indicesNodos(ii),1:3) += Def_xy;
+                Def(indicesNodos(ii),4) += 1;
             end
         end
     end

@@ -41,17 +41,17 @@ function [localK] = fem2d_pstr_genK(nodes,D,th)
         localK = zeros(8);
         
         for ii = 1 : 4
-                s = p(ii,1);
-                t = p(ii,2);
-                DNnum = [(-1+t)/4   (1-t)/4    (1+t)/4   (-1-t)/4;
-                         (-1+s)/4   (-1-s)/4   (1+s)/4   (1-s)/4];
-                J = DNnum*nodes;
-                V = inv(J)*DNnum;
-                B = [V(1,1)     0     V(1,2)     0     V(1,3)     0     V(1,4)     0;
-                       0      V(2,1)    0      V(2,2)    0      V(2,3)    0      V(2,4);
-                     V(2,1)   V(1,1)  V(2,2)   V(1,2)  V(2,3)   V(1,3)  V(2,4)   V(1,4)];
-                
-                localK += B' * D * B * det(J) * th;
+            s = p(ii,1);
+            t = p(ii,2);
+            DNnum = [(-1+t)/4   (1-t)/4    (1+t)/4   (-1-t)/4;
+                     (-1+s)/4   (-1-s)/4   (1+s)/4   (1-s)/4];
+            J = DNnum*nodes;
+            V = inv(J)*DNnum;
+            B = [V(1,1)     0     V(1,2)     0     V(1,3)     0     V(1,4)     0;
+                   0      V(2,1)    0      V(2,2)    0      V(2,3)    0      V(2,4);
+                 V(2,1)   V(1,1)  V(2,2)   V(1,2)  V(2,3)   V(1,3)  V(2,4)   V(1,4)];
+            
+            localK += B' * D * B * det(J) * th;
         end
     end
 end
