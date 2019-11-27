@@ -1,4 +1,4 @@
-function [U,reaction,Def,Ten,Ten_VM] = barras(xnode,icone,propiedades,Fixnodes,Pointload,model)
+function [U,reaction,Def,Ten] = barras(xnode,icone,propiedades,Fixnodes,Pointload,model)
     % Initialize system matrices and vectors
     [K,F] = barras_initialize(model.nnodes);
     
