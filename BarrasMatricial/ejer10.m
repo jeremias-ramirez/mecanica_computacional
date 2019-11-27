@@ -60,7 +60,7 @@ modelAmpliado.nbarras = size(iconeAmpliado, 1);
 
 figure
 for nodo = 1 : modelAmpliado.nnodes
-    subplot(2, 3, nodo)
+    subplot(3, 2, nodo)
     hold on
    
     for barra = 1 : modelAmpliado.nbarras
@@ -70,7 +70,7 @@ for nodo = 1 : modelAmpliado.nnodes
         nodo2 = xnodeAmpliado(indiceNodo2, :);
         x = [nodo1(1) nodo2(1)]';
         y = [nodo1(2) nodo2(2)]';
-        handles(1) = plot(x, y, "bo-");
+        plot(x, y, "bo-");
 
         indiceGlobalU1 = indiceNodo1*2 - 1;
         indiceGlobalV1 = indiceNodo1*2;
@@ -78,12 +78,12 @@ for nodo = 1 : modelAmpliado.nnodes
         indiceGlobalV2 = indiceNodo2*2;
         xNuevo = x + uAmpliado([indiceGlobalU1 indiceGlobalU2]);
         yNuevo = y + uAmpliado([indiceGlobalV1 indiceGlobalV2]);
-        handles(2) = plot(xNuevo, yNuevo, "ro-");
+        plot(xNuevo, yNuevo, "ro-");
     end
     
     xNodo = xnodeAmpliado(nodo, 1);
     yNodo = xnodeAmpliado(nodo, 2);
-    handles(3) = quiver(xNodo, yNodo, uAmpliado(nodo*2-1), uAmpliado(nodo*2), "k", "linewidth", 2, "maxheadsize", 0.1);
+    quiver(xNodo, yNodo, uAmpliado(nodo*2-1), uAmpliado(nodo*2), "k", "linewidth", 2, "maxheadsize", 0.1);
     
     hold off
     
@@ -96,7 +96,8 @@ for nodo = 1 : modelAmpliado.nnodes
     grid on
 end
 
-hleg = legend(handles, {"Configuración inicial", "Configuración final", "Desplazamiento"});
-newPosition = [0.875 0.8 0.085 0.1];
+hleg = legend("Configuración inicial", "Configuración final");
+newPosition = [0.82 0.85 0.16 0.05];
 newUnits = 'normalized';
 set(hleg, 'Position', newPosition, 'Units', newUnits);
+%print -dsvg "-S700, 1000" ejer10.svg
