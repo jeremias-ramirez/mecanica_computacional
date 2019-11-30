@@ -42,3 +42,5 @@ F = fem1d_pointload(F,Pointload);
 [Kd,Fd] = fem1d_fixnodes(K,F,Fixnodes);
 U = Kd\Fd;
 reaction = K * U - F;
+
+UAnalitica = solucionEjer5Analitica(xnode, Q, L, E, A);
